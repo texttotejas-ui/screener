@@ -1,0 +1,34 @@
+name: Refresh Stocklist
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 12 * * 1-5'
+permissions:
+  contents: write
+concurrency:
+  group: stocklist-refresh
+  cancel-in-progress: false
+jobs:
+  screen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Angel One SDK
+        run: pip install -r requirements.txt
+      - name: Test calculations
+        run: python -m unittest discover -s tests
+      - name: Update daily snapshot
+        env:
+          ANGEL_API_KEY: ${{ secrets.ANGEL_API_KEY }}
+          ANGEL_ACCESS_TOKEN: ${{ secrets.ANGEL_ACCESS_TOKEN }}
+        run: python scripts/screen.py
+      - name: Save snapshot
+        run: |
+          git config user.name 'Stocklist'
+          git config user.email 'stocklist@users.noreply.github.com'
+          git add dist/data.json
+          git diff --cached --quiet || git commit -m 'Update end-of-day Stocklist snapshot'
+          git push

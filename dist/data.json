@@ -1,0 +1,10 @@
+{
+  "status": "setup_required",
+  "asOf": null,
+  "generatedAt": null,
+  "universeCount": 501,
+  "stocks": [],
+  "errors": [],
+  "provider": "Angel One SmartAPI \u2014 not connected",
+  "universeSource": "NSE Indices snapshot; Moneycontrol cross-check pending"
+}
